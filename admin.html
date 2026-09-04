@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AP2MD CONNECT PRO — Administration</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <main class="admin-shell">
+    <div class="admin-wrap">
+
+      <header class="admin-top">
+        <div>
+          <p>AP2MD-Douké • CONNECT PRO</p>
+          <h1>Espace Administration</h1>
+          <p>Gestion sécurisée de la plateforme.</p>
+        </div>
+
+        <button id="logoutBtn">
+          Se déconnecter
+        </button>
+      </header>
+
+      <section class="admin-card">
+        <h2>Bienvenue</h2>
+
+        <p id="userInfo">
+          Vérification de votre session...
+        </p>
+
+        <p id="adminMsg"></p>
+      </section>
+
+      <section class="admin-card">
+        <h2>Tableau de bord</h2>
+
+        <p>
+          Votre espace AP2MD CONNECT PRO est prêt.
+        </p>
+
+        <div class="admin-modules">
+
+          <div>
+            <strong>Projets</strong>
+            <span>Gestion des projets AP2MD</span>
+          </div>
+
+          <div>
+            <strong>Groupements</strong>
+            <span>Gestion des groupements bénéficiaires</span>
+          </div>
+
+          <div>
+            <strong>Bénéficiaires</strong>
+            <span>Gestion des bénéficiaires</span>
+          </div>
+
+          <div>
+            <strong>Activités</strong>
+            <span>Suivi des activités</span>
+          </div>
+
+          <div>
+            <strong>Indicateurs</strong>
+            <span>Suivi des indicateurs</span>
+          </div>
+
+          <div>
+            <strong>Données Kobo</strong>
+            <span>Intégration et analyse des données</span>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+
+    const AP2MD_CONFIG = {
+
+      supabaseUrl:
+        'https://pturkucczqqioivapjcr.supabase.co',
+
+      supabasePublishableKey:
+        'sb_publishable_GO8o-jJp97DG0poviRApzQ_v3CgaqRT'
+
+    };
+
+
+    const sb = window.supabase.createClient(
+
+      AP2MD_CONFIG.supabaseUrl,
+
+      AP2MD_CONFIG.supabasePublishableKey
+
+    );
+
+
+    async function checkAccess() {
+
+      const {
+        data: { session },
+        error
+      } = await sb.auth.getSession();
+
+
+      if (error || !session) {
+
+        window.location.href = 'index.html';
+
+        return;
+
+      }
+
+
+      const user = session.user;
+
+
+      const { data: profile, error: profileError } =
+
+        await sb
+
+          .from('profils_utilisateurs')
+
+          .select('full_name,email,role,is_active')
+
+          .eq('id', user.id)
+
+          .single();
+
+
+      if (
+
+        profileError ||
+
+        !profile ||
+
+        profile.is_active !== true
+
+      ) {
+
+        await sb.auth.signOut();
+
+        document.getElementById('userInfo').textContent =
+          'Accès refusé.';
+
+        document.getElementById('adminMsg').textContent =
+          'Votre profil AP2MD n’est pas autorisé.';
+
+        setTimeout(() => {
+
+          window.location.href = 'index.html';
+
+        }, 1500);
+
+        return;
+
+      }
+
+
+      if (profile.role !== 'Super Admin') {
+
+        await sb.auth.signOut();
+
+        document.getElementById('userInfo').textContent =
+          'Accès réservé au Super Admin.';
+
+        document.getElementById('adminMsg').textContent =
+          'Votre rôle actuel : ' +
+          (profile.role || 'Utilisateur');
+
+        setTimeout(() => {
+
+          window.location.href = 'index.html';
+
+        }, 2000);
+
+        return;
+
+      }
+
+
+      document.getElementById('userInfo').innerHTML =
+
+        '<strong>' +
+
+        (profile.full_name || user.email) +
+
+        '</strong><br>' +
+
+        user.email +
+
+        '<br><strong>Rôle :</strong> ' +
+
+        profile.role;
+
+
+      document.getElementById('adminMsg').textContent =
+
+        'Authentification et autorisation vérifiées.';
+
+    }
+
+
+    document
+
+      .getElementById('logoutBtn')
+
+      .addEventListener('click', async () => {
+
+        await sb.auth.signOut();
+
+        window.location.href = 'index.html';
+
+      });
+
+
+    checkAccess();
+
+  </script>
+
+</body>
+</html>
