@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AP2MD CONNECT PRO — Tableau de bord</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #071b14;
+      color: #ffffff;
+    }
+
+    .page {
+      min-height: 100vh;
+      padding: 25px 16px 60px;
+    }
+
+    .container {
+      width: min(1200px, 100%);
+      margin: auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .brand img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 27px;
+    }
+
+    .brand p {
+      margin: 6px 0 0;
+      color: #b7c8c0;
+      font-size: 13px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button,
+    .button {
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      text-decoration: none;
+      color: #ffffff;
+      background: #176b4c;
+    }
+
+    button:hover,
+    .button:hover {
+      opacity: .9;
+    }
+
+    .logout {
+      background: #9b3030;
+    }
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h2 {
+      margin: 0 0 7px;
+      font-size: 30px;
+    }
+
+    .welcome p {
+      margin: 0;
+      color: #b7c8c0;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #0d2a20;
+      border: 1px solid #1d4437;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    }
+
+    .card-label {
+      color: #b7c8c0;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .card-value {
+      font-size: 34px;
+      font-weight: 800;
+      color: #69d49e;
+    }
+
+    .card-small {
+      color: #8fa89e;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .panel {
+      background: #0d2a20;
+      border: 1px solid #1d4437;
+      border-radius: 18px;
+      padding: 23px;
+    }
+
+    .panel h3 {
+      margin: 0 0 8px;
+      font-size: 21px;
+    }
+
+    .panel-description {
+      color: #8fa89e;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    .project-item,
+    .indicator-item {
+      padding: 14px 0;
+      border-bottom: 1px solid #1d4437;
+    }
+
+    .project-item:last-child,
+    .indicator-item:last-child {
+      border-bottom: 0;
+    }
+
+    .project-name {
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .project-meta,
+    .indicator-meta {
+      color: #8fa89e;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 8px;
+      background: #176b4c;
+      font-size: 11px;
+      margin-top: 7px;
+    }
+
+    .progress {
+      height: 9px;
+      background: #17382d;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #69d49e;
+      border-radius: 20px;
+      width: 0%;
+    }
+
+    .empty {
+      color: #8fa89e;
+      font-size: 13px;
+      padding: 10px 0;
+    }
+
+    .status {
+      margin-top: 20px;
+      padding: 13px 15px;
+      border-radius: 10px;
+      background: #103b2b;
+      color: #9be2bc;
+      font-size: 13px;
+    }
+
+    .error {
+      background: #4a2020;
+      color: #ffb5b5;
+    }
+
+    @media (max-width: 900px) {
+      .cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 550px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .brand img {
+        width: 58px;
+        height: 58px;
+      }
+
+      .brand h1 {
+        font-size: 21px;
+      }
+
+      .welcome h2 {
+        font-size: 25px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="page">
+  <div class="container">
+
+    <header class="header">
+
+      <div class="brand">
+
+        <img
+          src="assets/logo-ap2md-officiel.png"
+          alt="Logo officiel AP2MD"
+        >
+
+        <div>
+          <h1>AP2MD CONNECT PRO</h1>
+          <p>Plateforme de pilotage et de suivi-évaluation</p>
+        </div>
+
+      </div>
+
+      <div class="actions">
+
+        <button id="refreshBtn">
+          Actualiser
+        </button>
+
+        <a class="button" href="admin.html">
+          Administration
+        </a>
+
+        <button class="logout" id="logoutBtn">
+          Déconnexion
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <section class="welcome">
+
+      <h2>
+        Tableau de bord général
+      </h2>
+
+      <p>
+        Vue synthétique des projets, indicateurs et résultats de suivi.
+      </p>
+
+    </section>
+
+
+    <section class="cards">
+
+      <div class="card">
+        <div class="card-label">Projets</div>
+        <div class="card-value" id="projectsCount">—</div>
+        <div class="card-small">Projets enregistrés</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Budget total</div>
+        <div class="card-value" id="budgetTotal">—</div>
+        <div class="card-small">FCFA</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Indicateurs</div>
+        <div class="card-value" id="indicatorsCount">—</div>
+        <div class="card-small">Indicateurs enregistrés</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Suivis</div>
+        <div class="card-value" id="followupsCount">—</div>
+        <div class="card-small">Suivis d'indicateurs</div>
+      </div>
+
+    </section>
+
+
+    <section class="grid">
+
+      <div class="panel">
+
+        <h3>
+          Projets
+        </h3>
+
+        <div class="panel-description">
+          Projets enregistrés dans la base AP2MD CONNECT PRO.
+        </div>
+
+        <div id="projectsList">
+          <div class="empty">
+            Chargement...
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="panel">
+
+        <h3>
+          Suivi des indicateurs
+        </h3>
+
+        <div class="panel-description">
+          Derniers résultats disponibles.
+        </div>
+
+        <div id="indicatorsList">
+          <div class="empty">
+            Chargement...
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <div id="systemStatus" class="status">
+      Vérification de la connexion...
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+
+  const SUPABASE_URL =
+    'https://pturkucczqqioivapjcr.supabase.co';
+
+  const SUPABASE_KEY =
+    'sb_publishable_GO8o-jJp97DG0poviRApzQ_v3CgaqRT';
+
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+
+  function money(value) {
+
+    if (
+      value === null ||
+      value === undefined
+    ) {
+      return '0';
+    }
+
+    return Number(value)
+      .toLocaleString('fr-FR');
+
+  }
+
+
+  function escapeHTML(value) {
+
+    if (
+      value === null ||
+      value === undefined
+    ) {
+      return '';
+    }
+
+    return String(value)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+
+  }
+
+
+  async function checkSession() {
+
+    const {
+      data,
+      error
+    } = await supabaseClient.auth.getSession();
+
+    if (
+      error ||
+      !data.session
+    ) {
+
+      window.location.href =
+        'index.html';
+
+      return false;
+
+    }
+
+    return true;
+
+  }
+
+
+  async function loadDashboard() {
+
+    const connected =
+      await checkSession();
+
+    if (!connected) {
+      return;
+    }
+
+
+    const status =
+      document.getElementById(
+        'systemStatus'
+      );
+
+    status.textContent =
+      'Connexion Supabase active — chargement des données...';
+
+
+    try {
+
+      /* =========================
+         PROJETS
+      ========================= */
+
+      const {
+        data: projects,
+        error: projectsError
+      } = await supabaseClient
+        .from('projects')
+        .select(
+          'id,project_code,project_name,donor,stard_date,and_date,budget,intervention_zone,statut,created'
+        )
+        .order(
+          'created',
+          {
+            ascending: false
+          }
+        );
+
+
+      if (projectsError) {
+        throw projectsError;
+      }
+
+
+      /* =========================
+         INDICATEURS
+      ========================= */
+
+      const {
+        data: indicators,
+        error: indicatorsError
+      } = await supabaseClient
+        .from('indicateurs')
+        .select(
+          'id,project_id,indicator_code,indicator_name,indicator_type,unit,baseline,target,achieved,reporting_periode,source,calculation_methode,comments,created_at'
+        )
+        .order(
+          'created_at',
+          {
+            ascending: false
+          }
+        );
+
+
+      if (indicatorsError) {
+        throw indicatorsError;
+      }
+
+
+      /* =========================
+         SUIVI DES INDICATEURS
+      ========================= */
+
+      const {
+        data: followups,
+        error: followupsError
+      } = await supabaseClient
+        .from('suivi_indicateurs')
+        .select(
+          'id,indicateur_id,project_id,reporting_periode,valeur_prevue,valeur_realisee,taux_realisation,source_donnees,commentaire,responsable,created_at'
+        )
+        .order(
+          'created_at',
+          {
+            ascending: false
+          }
+        );
+
+
+      if (followupsError) {
+        throw followupsError;
+      }
+
+
+      /* =========================
+         KPI
+      ========================= */
+
+      document.getElementById(
+        'projectsCount'
+      ).textContent =
+        projects.length;
+
+
+      document.getElementById(
+        'indicatorsCount'
+      ).textContent =
+        indicators.length;
+
+
+      document.getElementById(
+        'followupsCount'
+      ).textContent =
+        followups.length;
+
+
+      const totalBudget =
+        projects.reduce(
+          (total, project) =>
+            total +
+            Number(project.budget || 0),
+          0
+        );
+
+
+      document.getElementById(
+        'budgetTotal'
+      ).textContent =
+        money(totalBudget);
+
+
+      /* =========================
+         LISTE DES PROJETS
+      ========================= */
+
+      const projectsList =
+        document.getElementById(
+          'projectsList'
+        );
+
+
+      if (!projects.length) {
+
+        projectsList.innerHTML =
+          '<div class="empty">Aucun projet enregistré pour le moment.</div>';
+
+      } else {
+
+        projectsList.innerHTML =
+          projects
+            .slice(0, 8)
+            .map(project => {
+
+              return `
+                <div class="project-item">
+
+                  <div class="project-name">
+                    ${escapeHTML(
+                      project.project_name ||
+                      'Projet sans nom'
+                    )}
+                  </div>
+
+                  <div class="project-meta">
+
+                    Code :
+                    ${escapeHTML(
+                      project.project_code || '—'
+                    )}
+
+                    <br>
+
+                    Bailleur :
+                    ${escapeHTML(
+                      project.donor || '—'
+                    )}
+
+                    <br>
+
+                    Zone :
+                    ${escapeHTML(
+                      project.intervention_zone || '—'
+                    )}
+
+                  </div>
+
+                  <span class="badge">
+                    ${escapeHTML(
+                      project.statut || 'Non défini'
+                    )}
+                  </span>
+
+                </div>
+              `;
+
+            })
+            .join('');
+
+      }
+
+
+      /* =========================
+         LISTE DES INDICATEURS
+      ========================= */
+
+      const indicatorsList =
+        document.getElementById(
+          'indicatorsList'
+        );
+
+
+      if (!followups.length) {
+
+        indicatorsList.innerHTML =
+          '<div class="empty">Aucun suivi d’indicateur enregistré.</div>';
+
+      } else {
+
+        const indicatorMap =
+          new Map(
+            indicators.map(
+              indicator => [
+                indicator.id,
+                indicator
+              ]
+            )
+          );
+
+
+        indicatorsList.innerHTML =
+          followups
+            .slice(0, 8)
+            .map(item => {
+
+              const indicator =
+                indicatorMap.get(
+                  item.indicateur_id
+                );
+
+
+              let taux =
+                Number(
+                  item.taux_realisation
+                );
+
+
+              if (
+                !Number.isFinite(taux)
+              ) {
+                taux = 0;
+              }
+
+
+              taux =
+                Math.max(
+                  0,
+                  Math.min(
+                    100,
+                    taux
+                  )
+                );
+
+
+              return `
+                <div class="indicator-item">
+
+                  <div class="project-name">
+                    ${escapeHTML(
+                      indicator?.indicator_name ||
+                      'Indicateur'
+                    )}
+                  </div>
+
+                  <div class="indicator-meta">
+
+                    Période :
+                    ${escapeHTML(
+                      item.reporting_periode || '—'
+                    )}
+
+                    <br>
+
+                    Prévu :
+                    ${escapeHTML(
+                      item.valeur_prevue ?? '—'
+                    )}
+
+                    &nbsp; | &nbsp;
+
+                    Réalisé :
+                    ${escapeHTML(
+                      item.valeur_realisee ?? '—'
+                    )}
+
+                    <br>
+
+                    Taux de réalisation :
+                    ${taux.toFixed(1)} %
+
+                  </div>
+
+                  <div class="progress">
+
+                    <div
+                      class="progress-bar"
+                      style="width:${taux}%">
+                    </div>
+
+                  </div>
+
+                </div>
+              `;
+
+            })
+            .join('');
+
+      }
+
+
+      status.textContent =
+        '✓ Données Supabase chargées avec succès.';
+
+
+    } catch (error) {
+
+      console.error(
+        'Erreur Dashboard :',
+        error
+      );
+
+      status.className =
+        'status error';
+
+      status.textContent =
+        'Erreur lors du chargement des données : ' +
+        (
+          error.message ||
+          'erreur inconnue'
+        );
+
+    }
+
+  }
+
+
+  document.getElementById(
+    'refreshBtn'
+  ).addEventListener(
+    'click',
+    loadDashboard
+  );
+
+
+  document.getElementById(
+    'logoutBtn'
+  ).addEventListener(
+    'click',
+    async () => {
+
+      await supabaseClient.auth.signOut();
+
+      window.location.href =
+        'index.html';
+
+    }
+  );
+
+
+  loadDashboard();
+
+</script>
+
+</body>
+</html>
