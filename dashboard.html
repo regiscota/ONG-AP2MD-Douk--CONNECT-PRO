@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>AP2MD CONNECT PRO — Dashboard</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .dashboard-page {
+      min-height: 100vh;
+      padding: 35px 20px 60px;
+    }
+
+    .dashboard-container {
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 35px;
+    }
+
+    .dashboard-title h1 {
+      font-size: clamp(32px, 5vw, 55px);
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+
+    .dashboard-title p {
+      color: var(--muted);
+    }
+
+    .dashboard-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .dashboard-actions button,
+    .dashboard-actions a {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      color: var(--white);
+      border-radius: 10px;
+      padding: 11px 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .dashboard-actions button:hover,
+    .dashboard-actions a:hover {
+      background: rgba(255,255,255,.1);
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 25px;
+    }
+
+    .kpi-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 25px;
+      min-height: 145px;
+      box-shadow: var(--shadow);
+    }
+
+    .kpi-label {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .kpi-value {
+      display: block;
+      font-size: 40px;
+      font-weight: 800;
+      color: var(--green-light);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .kpi-note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.4fr .6fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .dashboard-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 27px;
+      box-shadow: var(--shadow);
+    }
+
+    .dashboard-card h2 {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .dashboard-card > p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 22px;
+    }
+
+    .module-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .module-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: rgba(255,255,255,.035);
+    }
+
+    .module-item strong {
+      display: block;
+    }
+
+    .module-item span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .module-count {
+      min-width: 48px;
+      text-align: center;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(37,180,107,.12);
+      color: var(--green-light);
+      font-weight: bold;
+    }
+
+    .access-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .access-item {
+      padding: 15px;
+      border-radius: 13px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.035);
+    }
+
+    .access-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .access-item span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px;
+      border-radius: 12px;
+      background: rgba(37,180,107,.08);
+      border: 1px solid rgba(37,180,107,.2);
+      margin-top: 20px;
+      font-size: 13px;
+    }
+
+    .system-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green-light);
+      flex-shrink: 0;
+    }
+
+    .dashboard-message {
+      min-height: 24px;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 15px;
+    }
+
+    @media(max-width: 950px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media(max-width: 550px) {
+      .dashboard-page {
+        padding: 25px 15px 45px;
+      }
+
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .kpi-value {
+        font-size: 34px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="dashboard-page">
+
+    <div class="dashboard-container">
+
+      <header class="dashboard-header">
+
+        <div class="dashboard-title">
+
+          <p class="eyebrow">
+            AP2MD-Douké • CONNECT PRO
+          </p>
+
+          <h1>
+            Tableau de bord
+          </h1>
+
+          <p>
+            Vue générale du système de pilotage de l'ONG.
+          </p>
+
+        </div>
+
+        <div class="dashboard-actions">
+
+          <button id="refreshBtn">
+            Actualiser
+          </button>
+
+          <a href="admin.html">
+            Administration
+          </a>
+
+          <button id="logoutBtn">
+            Déconnexion
+          </button>
+
+        </div>
+
+      </header>
+
+
+      <!-- ================= KPI ================= -->
+
+      <section class="kpi-grid">
+
+        <article class="kpi-card">
+
+          <span class="kpi-label">
+            Projets
+          </span>
+
+          <strong id="projectsCount"
+                  class="kpi-value">
+            —
+          </strong>
+
+          <span class="kpi-note">
+            Projets enregistrés
+          </span>
+
+        </article>
+
+
+        <article class="kpi-card">
+
+          <span class="kpi-label">
+            Groupements
+          </span>
+
+          <strong id="groupsCount"
+                  class="kpi-value">
+            —
+          </strong>
+
+          <span class="kpi-note">
+            Groupements enregistrés
+          </span>
+
+        </article>
+
+
+        <article class="kpi-card">
+
+          <span class="kpi-label">
+            Bénéficiaires
+          </span>
+
+          <strong id="beneficiariesCount"
+                  class="kpi-value">
+            —
+          </strong>
+
+          <span class="kpi-note">
+            Bénéficiaires enregistrés
+          </span>
+
+        </article>
+
+
+        <article class="kpi-card">
+
+          <span class="kpi-label">
+            Activités
+          </span>
+
+          <strong id="activitiesCount"
+                  class="kpi-value">
+            —
+          </strong>
+
+          <span class="kpi-note">
+            Activités enregistrées
+          </span>
+
+        </article>
+
+      </section>
+
+
+      <!-- ================= CONTENU ================= -->
+
+      <section class="dashboard-grid">
+
+        <article class="dashboard-card">
+
+          <h2>
+            Modules opérationnels
+          </h2>
+
+          <p>
+            Accès aux principaux domaines de gestion
+            prévus par le Plan directeur.
+          </p>
+
+
+          <div class="module-list">
+
+            <div class="module-item">
+              <div>
+                <strong>Projets</strong>
+                <span>Gestion et pilotage des projets</span>
+              </div>
+
+              <div id="projectsModule"
+                   class="module-count">
+                —
+              </div>
+            </div>
+
+
+            <div class="module-item">
+              <div>
+                <strong>Groupements</strong>
+                <span>Suivi des groupements bénéficiaires</span>
+              </div>
+
+              <div id="groupsModule"
+                   class="module-count">
+                —
+              </div>
+            </div>
+
+
+            <div class="module-item">
+              <div>
+                <strong>Bénéficiaires</strong>
+                <span>Gestion des bénéficiaires</span>
+              </div>
+
+              <div id="beneficiariesModule"
+                   class="module-count">
+                —
+              </div>
+            </div>
+
+
+            <div class="module-item">
+              <div>
+                <strong>Activités</strong>
+                <span>Planification et suivi des activités</span>
+              </div>
+
+              <div id="activitiesModule"
+                   class="module-count">
+                —
+              </div>
+            </div>
+
+
+            <div class="module-item">
+              <div>
+                <strong>Indicateurs</strong>
+                <span>Suivi des résultats et performances</span>
+              </div>
+
+              <div id="indicatorsModule"
+                   class="module-count">
+                —
+              </div>
+            </div>
+
+          </div>
+
+        </article>
+
+
+        <article class="dashboard-card">
+
+          <h2>
+            Sécurité
+          </h2>
+
+          <p>
+            État de votre accès à la plateforme.
+          </p>
+
+
+          <div class="access-list">
+
+            <div class="access-item">
+
+              <strong>
+                Authentification
+              </strong>
+
+              <span id="authStatus">
+                Vérification...
+              </span>
+
+            </div>
+
+
+            <div class="access-item">
+
+              <strong>
+                Profil
+              </strong>
+
+              <span id="profileStatus">
+                Vérification...
+              </span>
+
+            </div>
+
+
+            <div class="access-item">
+
+              <strong>
+                Rôle
+              </strong>
+
+              <span id="roleStatus">
+                Vérification...
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="system-status">
+
+            <span class="system-dot"></span>
+
+            <span>
+              Connexion sécurisée Supabase
+            </span>
+
+          </div>
+
+        </article>
+
+      </section>
+
+
+      <!-- ================= MESSAGE ================= -->
+
+      <div id="dashboardMessage"
+           class="dashboard-message">
+        Chargement des données...
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- ================= SUPABASE ================= -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+  <script>
+
+    const AP2MD_CONFIG = {
+
+      supabaseUrl:
+        'https://pturkucczqqioivapjcr.supabase.co',
+
+      supabasePublishableKey:
+        'sb_publishable_GO8o-jJp97DG0poviRApzQ_v3CgaqRT'
+
+    };
+
+
+    const sb = window.supabase.createClient(
+
+      AP2MD_CONFIG.supabaseUrl,
+
+      AP2MD_CONFIG.supabasePublishableKey
+
+    );
+
+
+    const $ = (id) =>
+      document.getElementById(id);
+
+
+    /*
+     * Compteurs dynamiques.
+     *
+     * Les noms de tables correspondent aux modules
+     * déjà prévus dans notre architecture.
+     */
+
+    async function countTable(tableName) {
+
+      const result = await sb
+        .from(tableName)
+        .select('*', {
+          count: 'exact',
+          head: true
+        });
+
+      if (result.error) {
+
+        console.warn(
+          'Table non disponible :',
+          tableName,
+          result.error.message
+        );
+
+        return null;
+
+      }
+
+      return result.count ?? 0;
+
+    }
+
+
+    async function loadDashboard() {
+
+      $('dashboardMessage').textContent =
+        'Actualisation des données...';
+
+
+      try {
+
+        /*
+         * Vérification de la session
+         */
+
+        const {
+          data: {
+            session
+          },
+          error: sessionError
+        } = await sb.auth.getSession();
+
+
+        if (sessionError || !session) {
+
+          window.location.href =
+            'index.html';
+
+          return;
+
+        }
+
+
+        const user = session.user;
+
+
+        $('authStatus').textContent =
+          'Session active';
+
+
+        /*
+         * Vérification du profil
+         */
+
+        const {
+          data: profile,
+          error: profileError
+        } = await sb
+          .from('profils_utilisateurs')
+          .select(
+            'full_name,email,role,is_active'
+          )
+          .eq('id', user.id)
+          .single();
+
+
+        if (profileError || !profile) {
+
+          $('profileStatus').textContent =
+            'Profil introuvable';
+
+          $('roleStatus').textContent =
+            'Non défini';
+
+        } else {
+
+          $('profileStatus').textContent =
+            profile.full_name ||
+            profile.email ||
+            user.email;
+
+          $('roleStatus').textContent =
+            profile.role ||
+            'Utilisateur';
+
+        }
+
+
+        /*
+         * Comptage des données.
+         *
+         * Si une table n'existe pas encore,
+         * le dashboard laisse simplement —
+         * au lieu d'inventer une donnée.
+         */
+
+        const [
+          projects,
+          groups,
+          beneficiaries,
+          activities,
+          indicators
+        ] = await Promise.all([
+
+          countTable('projets'),
+
+          countTable('groupements'),
+
+          countTable('beneficiaires'),
+
+          countTable('activites'),
+
+          countTable('indicateurs')
+
+        ]);
+
+
+        /*
+         * Affichage
+         */
+
+        const values = {
+
+          projectsCount: projects,
+
+          groupsCount: groups,
+
+          beneficiariesCount: beneficiaries,
+
+          activitiesCount: activities,
+
+          projectsModule: projects,
+
+          groupsModule: groups,
+
+          beneficiariesModule: beneficiaries,
+
+          activitiesModule: activities,
+
+          indicatorsModule: indicators
+
+        };
+
+
+        Object.entries(values).forEach(
+          ([id, value]) => {
+
+            if ($(id)) {
+
+              $(id).textContent =
+                value === null
+                  ? '—'
+                  : value;
+
+            }
+
+          }
+        );
+
+
+        $('dashboardMessage').textContent =
+          'Dashboard actualisé avec les données disponibles.';
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        $('dashboardMessage').textContent =
+          'Une erreur est survenue pendant le chargement du dashboard.';
+
+      }
+
+    }
+
+
+    /*
+     * Actualiser
+     */
+
+    $('refreshBtn').onclick =
+      loadDashboard;
+
+
+    /*
+     * Déconnexion
+     */
+
+    $('logoutBtn').onclick =
+      async () => {
+
+        await sb.auth.signOut();
+
+        window.location.href =
+          'index.html';
+
+      };
+
+
+    /*
+     * Lancement
+     */
+
+    loadDashboard();
+
+  </script>
+
+</body>
+</html>
