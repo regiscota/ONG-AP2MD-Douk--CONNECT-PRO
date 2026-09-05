@@ -1,0 +1,29 @@
+<header>
+  <img src="assets/logo-ap2md-officiel.png" alt="Logo AP2MD">
+
+  <div style="flex:1;">
+    <h1>AP2MD CONNECT PRO</h1>
+    <p>Plateforme de gestion, suivi-évaluation et pilotage des projets</p>
+  </div>
+
+  <a
+    href="users.html"
+    id="usersButton"
+    style="
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      text-decoration:none;
+      background:white;
+      color:#0b5d3b;
+      padding:11px 16px;
+      border-radius:10px;
+      font-weight:bold;
+      font-size:13px;
+      box-shadow:0 2px 8px rgba(0,0,0,.15);
+      white-space:nowrap;
+    "
+  >
+    👥 Utilisateurs
+  </a>
+</header>
