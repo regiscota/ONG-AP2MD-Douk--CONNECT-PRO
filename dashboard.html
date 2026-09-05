@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AP2MD CONNECT PRO - Dashboard</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0b5d3b, #087f5b);
+      color: white;
+      padding: 18px 25px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 3px 10px rgba(0,0,0,.15);
+    }
+
+    header img {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      background: white;
+      border-radius: 12px;
+      padding: 4px;
+    }
+
+    header h1 {
+      font-size: 22px;
+    }
+
+    header p {
+      font-size: 13px;
+      opacity: .9;
+      margin-top: 4px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: auto;
+      padding: 25px;
+    }
+
+    .welcome {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 22px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.07);
+    }
+
+    .welcome h2 {
+      color: #0b5d3b;
+      margin-bottom: 7px;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.07);
+      border-left: 5px solid #0b5d3b;
+    }
+
+    .card h3 {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+
+    .number {
+      font-size: 30px;
+      font-weight: bold;
+      color: #0b5d3b;
+    }
+
+    .section {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 22px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.07);
+    }
+
+    .section h2 {
+      color: #0b5d3b;
+      margin-bottom: 18px;
+      font-size: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+    }
+
+    .mini-card {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 16px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .mini-card strong {
+      display: block;
+      font-size: 24px;
+      color: #0b5d3b;
+      margin-top: 7px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 850px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 12px;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: #0b5d3b;
+      color: white;
+      position: sticky;
+      top: 0;
+    }
+
+    tr:hover {
+      background: #f8fafc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .oui {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .non {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .info {
+      background: #e0f2fe;
+      color: #075985;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 25px;
+      color: #6b7280;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #6b7280;
+      font-size: 12px;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 14px;
+      }
+
+      header img {
+        width: 48px;
+        height: 48px;
+      }
+
+      header h1 {
+        font-size: 17px;
+      }
+
+      .container {
+        padding: 14px;
+      }
+
+      .number {
+        font-size: 25px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <img src="assets/logo-ap2md-officiel.png" alt="Logo AP2MD">
+  <div>
+    <h1>AP2MD CONNECT PRO</h1>
+    <p>Plateforme de gestion, suivi-évaluation et pilotage des projets</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="welcome">
+    <h2>Tableau de bord</h2>
+    <p>Suivi en temps réel des données du projet TCP/CAF/4001.</p>
+    <div id="connectionStatus" class="status">
+      Connexion à Supabase en cours...
+    </div>
+  </div>
+
+  <!-- INDICATEURS PRINCIPAUX -->
+  <div class="cards">
+
+    <div class="card">
+      <h3>Soumissions Kobo</h3>
+      <div class="number" id="totalSubmissions">0</div>
+    </div>
+
+    <div class="card">
+      <h3>Membres recensés</h3>
+      <div class="number" id="totalMembers">0</div>
+    </div>
+
+    <div class="card">
+      <h3>Femmes</h3>
+      <div class="number" id="totalWomen">0</div>
+    </div>
+
+    <div class="card">
+      <h3>Hommes</h3>
+      <div class="number" id="totalMen">0</div>
+    </div>
+
+    <div class="card">
+      <h3>Jeunes</h3>
+      <div class="number" id="totalYouth">0</div>
+    </div>
+
+    <div class="card">
+      <h3>PVH</h3>
+      <div class="number" id="totalDisabled">0</div>
+    </div>
+
+    <div class="card">
+      <h3>Nouveaux membres</h3>
+      <div class="number" id="totalNewMembers">0</div>
+    </div>
+
+  </div>
+
+  <!-- PROJET -->
+  <div class="section">
+    <h2>Projet TCP/CAF/4001</h2>
+
+    <div class="grid">
+
+      <div class="mini-card">
+        Code projet
+        <strong id="projectCode">—</strong>
+      </div>
+
+      <div class="mini-card">
+        Budget
+        <strong id="projectBudget">—</strong>
+      </div>
+
+      <div class="mini-card">
+        Zone d'intervention
+        <strong id="projectZone">—</strong>
+      </div>
+
+      <div class="mini-card">
+        Statut
+        <strong id="projectStatus">—</strong>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SUIVI DES ACTIVITES -->
+  <div class="section">
+    <h2>Suivi des activités Kobo</h2>
+
+    <div class="grid">
+
+      <div class="mini-card">
+        Réunions programmées
+        <strong id="plannedMeetings">0</strong>
+      </div>
+
+      <div class="mini-card">
+        Réunions tenues
+        <strong id="heldMeetings">0</strong>
+      </div>
+
+      <div class="mini-card">
+        Encadrement réalisé
+        <strong id="supervisionDone">0</strong>
+      </div>
+
+      <div class="mini-card">
+        Accompagnement réalisé
+        <strong id="supportDone">0</strong>
+      </div>
+
+      <div class="mini-card">
+        Formation appliquée
+        <strong id="trainingDone">0</strong>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DONNEES KOBO -->
+  <div class="section">
+    <h2>Données réelles KoboToolbox</h2>
+
+    <div id="koboLoading" class="loading">
+      Chargement des données Kobo...
+    </div>
+
+    <div class="table-wrapper">
+      <table id="koboTable" style="display:none;">
+        <thead>
+          <tr>
+            <th>ID Kobo</th>
+            <th>Date</th>
+            <th>Agent</th>
+            <th>Localité</th>
+            <th>Responsable</th>
+            <th>Membres</th>
+            <th>Femmes</th>
+            <th>Hommes</th>
+            <th>Jeunes</th>
+            <th>PVH</th>
+            <th>Encadrement</th>
+            <th>Accompagnement</th>
+          </tr>
+        </thead>
+
+        <tbody id="koboTableBody"></tbody>
+      </table>
+    </div>
+
+    <div id="koboError"></div>
+  </div>
+
+  <!-- REUNIONS -->
+  <div class="section">
+    <h2>Réunions et organisation</h2>
+
+    <div class="grid">
+
+      <div class="mini-card">
+        Calendrier annuel
+        <strong id="annualCalendar">0</strong>
+      </div>
+
+      <div class="mini-card">
+        Plan d'action
+        <strong id="actionPlan">0</strong>
+      </div>
+
+      <div class="mini-card">
+        Procès-verbaux
+        <strong id="minutes">0</strong>
+      </div>
+
+      <div class="mini-card">
+        Liste de présence
+        <strong id="attendanceList">0</strong>
+      </div>
+
+      <div class="mini-card">
+        Registre membres
+        <strong id="memberRegister">0</strong>
+      </div>
+
+      <div class="mini-card">
+        Cahier de caisse
+        <strong id="cashBook">0</strong>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  AP2MD CONNECT PRO — Données du projet TCP/CAF/4001
+</footer>
+
+<script>
+
+const SUPABASE_URL =
+  "https://pturkucczqqioivapjcr.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_GO8o-jJp97DG0poviRApzQ_v3CgaqRT";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+function numberValue(value) {
+
+  const n = Number(value);
+
+  return Number.isFinite(n) ? n : 0;
+
+}
+
+
+function isYes(value) {
+
+  if (value === null || value === undefined) {
+    return false;
+  }
+
+  const text = String(value).trim().toLowerCase();
+
+  return (
+    text === "oui" ||
+    text === "yes" ||
+    text === "1" ||
+    text.startsWith("oui")
+  );
+
+}
+
+
+function formatNumber(value) {
+
+  return Number(value || 0).toLocaleString("fr-FR");
+
+}
+
+
+function formatMoney(value) {
+
+  return Number(value || 0).toLocaleString(
+    "fr-FR",
+    {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }
+  ) + " FCFA";
+
+}
+
+
+async function loadProject() {
+
+  const { data, error } =
+    await supabaseClient
+      .from("projects")
+      .select("*")
+      .eq("id", 1)
+      .maybeSingle();
+
+  if (error) {
+
+    console.error("Erreur projet :", error);
+
+    return;
+  }
+
+  if (!data) {
+    return;
+  }
+
+  document.getElementById("projectCode").textContent =
+    data.project_code || "—";
+
+  document.getElementById("projectBudget").textContent =
+    formatMoney(data.budget);
+
+  document.getElementById("projectZone").textContent =
+    data.intervention_zone || "—";
+
+  document.getElementById("projectStatus").textContent =
+    data.status || "—";
+
+}
+
+
+async function loadKoboData() {
+
+  const { data, error } =
+    await supabaseClient
+      .from("kobo_submissions")
+      .select("kobo_submission_id, submitted_at, data")
+      .eq("collecte_kobo_id", 1)
+      .order("submitted_at", { ascending: true });
+
+  const loading =
+    document.getElementById("koboLoading");
+
+  const table =
+    document.getElementById("koboTable");
+
+  const tbody =
+    document.getElementById("koboTableBody");
+
+  const errorBox =
+    document.getElementById("koboError");
+
+
+  if (error) {
+
+    console.error("Erreur Kobo :", error);
+
+    loading.style.display = "none";
+
+    errorBox.innerHTML =
+      '<div class="error">Impossible de charger les données Kobo : '
+      + error.message +
+      '</div>';
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    loading.textContent =
+      "Aucune soumission Kobo trouvée.";
+
+    return;
+  }
+
+
+  loading.style.display = "none";
+
+  table.style.display = "table";
+
+  tbody.innerHTML = "";
+
+
+  let members = 0;
+  let women = 0;
+  let men = 0;
+  let youth = 0;
+  let disabled = 0;
+  let newMembers = 0;
+
+  let planned = 0;
+  let held = 0;
+
+  let supervision = 0;
+  let support = 0;
+  let training = 0;
+
+  let calendar = 0;
+  let actionPlan = 0;
+  let minutes = 0;
+  let attendance = 0;
+  let memberRegister = 0;
+  let cashBook = 0;
+
+
+  data.forEach(row => {
+
+    const d = row.data || {};
+
+
+    members += numberValue(d.effectif_total);
+
+    women += numberValue(d.femmes);
+
+    men += numberValue(d.hommes);
+
+    youth += numberValue(d.jeunes);
+
+    disabled += numberValue(d.pvh);
+
+    newMembers += numberValue(d.nouveaux_membres);
+
+
+    planned += numberValue(d.reunions_programmees);
+
+    held += numberValue(d.reunions_tenues);
+
+
+    if (isYes(d["encadrement_réalisé "])) {
+      supervision++;
+    }
+
+    if (isYes(d.accompagnement_realise)) {
+      support++;
+    }
+
+    if (isYes(d.formation_appliquee)) {
+      training++;
+    }
+
+
+    if (isYes(d.calendrier_annuel)) {
+      calendar++;
+    }
+
+    if (isYes(d.plan_action)) {
+      actionPlan++;
+    }
+
+    if (isYes(d.pv_cr)) {
+      minutes++;
+    }
+
+    if (isYes(d.liste_presence)) {
+      attendance++;
+    }
+
+    if (isYes(d.registre_membres)) {
+      memberRegister++;
+    }
+
+    if (isYes(d.cahier_caisse)) {
+      cashBook++;
+    }
+
+
+    const tr =
+      document.createElement("tr");
+
+
+    const date =
+      d.date_visite ||
+      row.submitted_at ||
+      "—";
+
+
+    tr.innerHTML = `
+
+      <td>${row.kobo_submission_id || "—"}</td>
+
+      <td>${date}</td>
+
+      <td>${d.nom_agent || "—"}</td>
+
+      <td>${d.localite || "—"}</td>
+
+      <td>${d.responsable_groupement || "—"}</td>
+
+      <td>${formatNumber(d.effectif_total)}</td>
+
+      <td>${formatNumber(d.femmes)}</td>
+
+      <td>${formatNumber(d.hommes)}</td>
+
+      <td>${formatNumber(d.jeunes)}</td>
+
+      <td>${formatNumber(d.pvh)}</td>
+
+      <td>
+        <span class="badge ${isYes(d["encadrement_réalisé "]) ? "oui" : "non"}">
+          ${d["encadrement_réalisé "] || "Non"}
+        </span>
+      </td>
+
+      <td>
+        <span class="badge ${isYes(d.accompagnement_realise) ? "oui" : "non"}">
+          ${d.accompagnement_realise || "Non"}
+        </span>
+      </td>
+
+    `;
+
+
+    tbody.appendChild(tr);
+
+  });
+
+
+  document.getElementById("totalSubmissions").textContent =
+    formatNumber(data.length);
+
+  document.getElementById("totalMembers").textContent =
+    formatNumber(members);
+
+  document.getElementById("totalWomen").textContent =
+    formatNumber(women);
+
+  document.getElementById("totalMen").textContent =
+    formatNumber(men);
+
+  document.getElementById("totalYouth").textContent =
+    formatNumber(youth);
+
+  document.getElementById("totalDisabled").textContent =
+    formatNumber(disabled);
+
+  document.getElementById("totalNewMembers").textContent =
+    formatNumber(newMembers);
+
+
+  document.getElementById("plannedMeetings").textContent =
+    formatNumber(planned);
+
+  document.getElementById("heldMeetings").textContent =
+    formatNumber(held);
+
+  document.getElementById("supervisionDone").textContent =
+    formatNumber(supervision);
+
+  document.getElementById("supportDone").textContent =
+    formatNumber(support);
+
+  document.getElementById("trainingDone").textContent =
+    formatNumber(training);
+
+
+  document.getElementById("annualCalendar").textContent =
+    formatNumber(calendar);
+
+  document.getElementById("actionPlan").textContent =
+    formatNumber(actionPlan);
+
+  document.getElementById("minutes").textContent =
+    formatNumber(minutes);
+
+  document.getElementById("attendanceList").textContent =
+    formatNumber(attendance);
+
+  document.getElementById("memberRegister").textContent =
+    formatNumber(memberRegister);
+
+  document.getElementById("cashBook").textContent =
+    formatNumber(cashBook);
+
+}
+
+
+async function initializeDashboard() {
+
+  const status =
+    document.getElementById("connectionStatus");
+
+
+  try {
+
+    await loadProject();
+
+    await loadKoboData();
+
+
+    status.textContent =
+      "✓ Connecté à Supabase — données Kobo réelles chargées";
+
+    status.style.color = "#166534";
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    status.textContent =
+      "⚠️ Erreur lors du chargement des données";
+
+    status.style.color = "#991b1b";
+
+  }
+
+}
+
+
+initializeDashboard();
+
+</script>
+
+</body>
+</html>
