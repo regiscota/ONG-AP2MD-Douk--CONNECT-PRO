@@ -1,0 +1,364 @@
+/* =========================================================
+   AP2MD CONNECT PRO — NOUVELLE INTERFACE
+   Couleurs : Bleu / Blanc
+   ========================================================= */
+
+body{
+  background:#f5f9fd;
+  color:#123047;
+}
+
+/* HEADER */
+.site-header{
+  background:rgba(255,255,255,.96);
+  border-bottom:1px solid #dbe7f0;
+  box-shadow:0 4px 18px rgba(7,59,92,.08);
+}
+
+.brand-text strong{
+  color:#043b5c;
+}
+
+.brand-text span{
+  color:#075985;
+}
+
+.main-nav a{
+  color:#526b7d;
+}
+
+.main-nav a:hover{
+  color:#075985;
+}
+
+/* LOGOS — PROPORTIONS PROTÉGÉES */
+.brand-logo,
+.hero-logo,
+.modal-logo{
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  flex-shrink:0;
+}
+
+.brand-logo{
+  width:54px;
+  height:54px;
+  min-width:54px;
+  min-height:54px;
+  border-radius:50%;
+  padding:4px;
+}
+
+.hero-logo{
+  width:105px;
+  height:105px;
+  min-width:105px;
+  min-height:105px;
+  border-radius:50%;
+  padding:6px;
+}
+
+.modal-logo{
+  width:75px;
+  height:75px;
+  min-width:75px;
+  min-height:75px;
+  border-radius:50%;
+  padding:5px;
+}
+
+.brand-logo img,
+.hero-logo img,
+.modal-logo img{
+  width:100%;
+  height:100%;
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  object-position:center;
+  display:block;
+}
+
+/* BOUTONS */
+.btn-primary{
+  background:#075985;
+  color:#fff;
+}
+
+.btn-primary:hover{
+  background:#043b5c;
+  box-shadow:0 10px 25px rgba(7,89,133,.22);
+}
+
+.btn-secondary{
+  background:#fff;
+  color:#075985;
+  border:1px solid #cbdce8;
+}
+
+.btn-secondary:hover{
+  background:#edf6fc;
+}
+
+/* HERO */
+.hero{
+  background:#f5f9fd;
+}
+
+.eyebrow{
+  color:#075985;
+}
+
+.hero h1{
+  color:#043b5c;
+}
+
+.hero h1 span{
+  color:#0ea5e9;
+}
+
+.hero-description{
+  color:#64748b;
+}
+
+/* CARTES DASHBOARD / APERÇU */
+.dashboard-preview{
+  background:linear-gradient(145deg,#ffffff,#edf6fc);
+  border:1px solid #d6e5ef;
+  box-shadow:0 20px 50px rgba(7,59,92,.12);
+}
+
+.preview-header{
+  border-bottom:1px solid #dbe7f0;
+  color:#123047;
+}
+
+.status-dot{
+  color:#16a34a;
+}
+
+.preview-card{
+  background:#f7fbfe;
+  border:1px solid #dbe7f0;
+}
+
+.preview-card strong{
+  color:#075985;
+}
+
+.preview-card span{
+  color:#64748b;
+}
+
+/* SECTIONS */
+.section-dark{
+  background:#edf5fa;
+}
+
+.section-heading h2{
+  color:#043b5c;
+}
+
+.section-heading p:last-child{
+  color:#64748b;
+}
+
+/* CARTES */
+.feature-card,
+.academy-card,
+.stat-card{
+  background:#fff;
+  border:1px solid #dbe7f0;
+  box-shadow:0 8px 25px rgba(7,59,92,.06);
+}
+
+.feature-card:hover{
+  border-color:#7bb9d9;
+  box-shadow:0 15px 35px rgba(7,59,92,.10);
+}
+
+.feature-icon{
+  background:#e7f4fb;
+  color:#075985;
+}
+
+.feature-card h3{
+  color:#043b5c;
+}
+
+.feature-card p{
+  color:#64748b;
+}
+
+.stat-card{
+  background:#fff;
+}
+
+.stat-card strong{
+  color:#075985;
+}
+
+.stat-card span{
+  color:#64748b;
+}
+
+/* PROJET */
+.project-card{
+  background:linear-gradient(145deg,#ffffff,#edf6fc);
+  border:1px solid #d6e5ef;
+  box-shadow:0 20px 50px rgba(7,59,92,.10);
+}
+
+.project-badge{
+  color:#075985;
+  border-color:#9bc7df;
+}
+
+.project-card h3{
+  color:#043b5c;
+}
+
+.project-card p{
+  color:#64748b;
+}
+
+.project-tags span{
+  background:#edf6fc;
+  border:1px solid #dbe7f0;
+  color:#34566d;
+}
+
+/* CTA */
+.cta-section h2{
+  color:#043b5c;
+}
+
+.cta-section p:last-child{
+  color:#64748b;
+}
+
+/* FOOTER */
+.site-footer{
+  background:#043b5c;
+  border-top:0;
+}
+
+.footer-inner p,
+.developer-credit span{
+  color:#d5e5ef;
+}
+
+.developer-credit strong{
+  color:#7dd3fc;
+}
+
+.footer-bottom{
+  border-top:1px solid rgba(255,255,255,.15);
+  color:#b9d0de;
+}
+
+/* MODAL */
+.modal{
+  background:rgba(4,59,92,.65);
+}
+
+.modal-box{
+  background:#fff;
+  border:1px solid #d6e5ef;
+  color:#123047;
+}
+
+.modal-close{
+  color:#075985;
+}
+
+.modal-box h2{
+  color:#043b5c;
+}
+
+.modal-box > p:not(.eyebrow){
+  color:#64748b;
+}
+
+.modal-box input{
+  background:#f7fbfe;
+  color:#123047;
+  border:1px solid #cbdce8;
+}
+
+.modal-box input:focus{
+  border-color:#075985;
+}
+
+.auth-message{
+  color:#15803d!important;
+}
+
+.link-button{
+  color:#075985;
+}
+
+/* ADMIN / DASHBOARD */
+.admin-shell{
+  background:#f5f9fd;
+}
+
+.admin-top h1{
+  color:#043b5c;
+}
+
+.admin-card{
+  background:#fff;
+  border:1px solid #dbe7f0;
+  box-shadow:0 8px 25px rgba(7,59,92,.06);
+}
+
+.admin-card h2{
+  color:#075985;
+}
+
+.admin-card p{
+  color:#64748b;
+}
+
+.admin-modules div{
+  background:#f7fbfe;
+  border:1px solid #dbe7f0;
+}
+
+.admin-modules strong{
+  color:#075985;
+}
+
+.admin-modules span{
+  color:#64748b;
+}
+
+/* MOBILE */
+@media(max-width:550px){
+
+  .brand-logo{
+    width:47px;
+    height:47px;
+    min-width:47px;
+    min-height:47px;
+  }
+
+  .hero-logo{
+    width:90px;
+    height:90px;
+    min-width:90px;
+    min-height:90px;
+  }
+
+  .modal-logo{
+    width:65px;
+    height:65px;
+    min-width:65px;
+    min-height:65px;
+  }
+
+}
